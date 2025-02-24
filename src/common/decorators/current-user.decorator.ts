@@ -1,17 +1,17 @@
-import {
-  createParamDecorator,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
+// import {
+//   createParamDecorator,
+//   ExecutionContext,
+//   UnauthorizedException,
+// } from '@nestjs/common';
 
-export const CurrentUser = createParamDecorator(
-  (data: unknown, context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest();
+// export const CurrentUser = createParamDecorator(
+//   (data: unknown, context: ExecutionContext) => {
+//     const request = context.switchToHttp().getRequest();
 
-    if (!request.user) {
-      throw new UnauthorizedException('User information not found');
-    }
+//     if (!request.user) {
+//       throw new UnauthorizedException('User information not found');
+//     }
 
-    return request.user;
-  },
-);
+//     return request.user;
+//   },
+// );

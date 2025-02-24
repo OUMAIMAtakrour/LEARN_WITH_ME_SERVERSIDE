@@ -6,8 +6,9 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserRole } from 'src/core/auth/schemas/user.schema';
+import { User } from 'src/core/auth/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import { UserRole } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class UserService {
@@ -100,7 +101,7 @@ export class UserService {
 
   async listUsers(currentUserRole: UserRole, page = 1, limit = 10) {
     console.log('Current User Role:', currentUserRole);
-    if (currentUserRole !== UserRole.ORGANIZER) {
+    if (currentUserRole !== UserRole.ADMIN) {
       throw new UnauthorizedException('Not authorized to list users');
     }
 

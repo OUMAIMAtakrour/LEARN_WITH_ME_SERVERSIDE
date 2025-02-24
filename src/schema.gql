@@ -1,0 +1,31 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Mutation {
+  signup(input: SignupInput!): User!
+}
+
+type Query {
+  hello: String!
+}
+
+input SignupInput {
+  email: String!
+  name: String!
+  password: String!
+  role: String!
+}
+
+type User {
+  _id: ID!
+  email: String!
+  name: String!
+  role: UserRole!
+}
+
+enum UserRole {
+  ADMIN
+  STUDENT
+  TEACHER
+}
