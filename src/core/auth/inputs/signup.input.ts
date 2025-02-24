@@ -27,7 +27,7 @@ export class SignupInput {
     message: 'Password must contain at least one number',
   })
   password: string;
-  @Field()
+  @Field(() => UserRole, { nullable: true })
   @IsOptional()
   @IsEnum(UserRole)
   role?: string;

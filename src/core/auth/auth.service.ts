@@ -8,7 +8,6 @@ import { User } from 'src/core/auth/schemas/user.schema';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
-import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from 'src/core/auth/schemas/refresh-token.schema';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +23,7 @@ export class AuthService {
   ) {}
   async signup(registerData: SignupInput) {
     const { email, password, name, role } = registerData;
-    const createdUser = new this.UserModel({ email: registerData.email });
+    // const createdUser = new this.UserModel({ email: registerData.email });
     const usedEmail = await this.UserModel.findOne({
       email: registerData.email,
     });
@@ -32,7 +31,7 @@ export class AuthService {
       throw new BadRequestException('Email already used');
     }
     const haschedPassword = await bcrypt.hash(password, 10);
-    await this.UserModel.create({
+    const createdUser = await this.UserModel.create({
       name,
       email,
       password: haschedPassword,

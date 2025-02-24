@@ -14,7 +14,7 @@ input SignupInput {
   email: String!
   name: String!
   password: String!
-  role: String!
+  role: UserRole
 }
 
 type User {
