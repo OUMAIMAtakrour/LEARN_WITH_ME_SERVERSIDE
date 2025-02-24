@@ -6,7 +6,8 @@ import {
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserRole } from 'src/core/auth/schemas/user.schema';
+import { User } from 'src/core/auth/schemas/user.schema';
+import { UserRole } from 'src/common/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { LoginDto } from './dto/login.dto';
@@ -36,7 +37,7 @@ export class AuthService {
       name,
       email,
       password: haschedPassword,
-      role: role || UserRole.MEMBER,
+      role: role || UserRole.STUDENT,
     });
     return createdUser;
   }

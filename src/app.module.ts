@@ -1,6 +1,5 @@
 import { Inject, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { UserModule } from './core/user/user.module';
 import { AuthModule } from './core/auth/auth.module';
 import { Mongoose } from 'mongoose';
@@ -11,10 +10,11 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 // import { config } from 'process';
 import config from './config/config';
+import { join } from 'path';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriver>({
+    GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       // playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
