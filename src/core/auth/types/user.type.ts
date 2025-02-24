@@ -14,4 +14,5 @@ export class User {
 
   @Field(() => UserRole)
   role: UserRole;
+  
 }
