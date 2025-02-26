@@ -57,11 +57,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // const payload = {
-    //   userId: user._id.toString(),
-    //   email: user.email,
-    //   role: user.role,
-    // };
+ 
     const tokens = await this.generateUserTokens(user._id.toString());
     return tokens;
   }

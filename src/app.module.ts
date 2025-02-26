@@ -11,6 +11,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 // import { config } from 'process';
 import config from './config/config';
 import { join } from 'path';
+import { CoursesModule } from './courses/courses.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { join } from 'path';
     }),
     UserModule,
     AuthModule,
+    CoursesModule,
   ],
 
   controllers: [],
