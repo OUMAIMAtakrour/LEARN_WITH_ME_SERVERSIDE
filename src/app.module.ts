@@ -27,7 +27,7 @@ import { CoursesModule } from './courses/courses.module';
       load: [config],
     }),
     JwtModule.registerAsync({
-      imports: [ConfigModule],//kdshvbsfsd
+      imports: [ConfigModule],//kdshvbsfsdsqfhqdn
       useFactory: async (config) => ({
         secret: config.get('jwt.secret'),
       }),
