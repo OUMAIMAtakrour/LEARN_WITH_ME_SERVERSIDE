@@ -14,7 +14,7 @@ export class CoursesResolver {
   }
 
   @Query(() => [Course], { name: 'courses' })
-  findAll() {//dfbqdfb
+  findAll() {//dfbqdfbwsfbsdf
     return this.coursesService.findAll();
   }
 
