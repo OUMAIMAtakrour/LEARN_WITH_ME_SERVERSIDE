@@ -5,7 +5,7 @@ import { User } from 'src/core/auth/schemas/user.schema';
 export type CourseDocument = Course & Document;
 
 @Schema({ timestamps: true })
-export class Course extends Document {
+export class Course {
   @Prop({ required: true })
   title: string;
 
