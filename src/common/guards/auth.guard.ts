@@ -5,13 +5,12 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { Model } from 'mongoose';
 import { User } from 'src/core/auth/schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(

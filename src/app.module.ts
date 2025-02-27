@@ -20,6 +20,8 @@ import { CoursesModule } from './courses/courses.module';
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+      introspection: true,
+      context: ({ req }) => ({ req }),
     }),
     ConfigModule.forRoot({
       isGlobal: true,

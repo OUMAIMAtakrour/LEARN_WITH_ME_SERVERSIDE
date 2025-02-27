@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/core/auth/schemas/user.schema';
+import { UserType } from 'src/core/auth/types/user.type';
 
 @ObjectType()
 export class Course {
@@ -15,8 +16,8 @@ export class Course {
   @Field()
   certified: Boolean;
 
-  @Field(() => User)
-  teacher: User;
+  @Field(() => UserType) 
+  teacher: UserType;
 
   @Field()
   createdAt: Date;

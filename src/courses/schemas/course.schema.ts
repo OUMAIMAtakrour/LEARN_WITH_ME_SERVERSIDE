@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { User } from 'src/core/auth/schemas/user.schema';
 
 export type CourseDocument = Course & Document;
@@ -15,7 +15,7 @@ export class Course {
   @Prop({ required: true })
   certified: boolean;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User })
-  teacher: User;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: () => User })
+  teacher: string;
 }
 export const CourseSchema = SchemaFactory.createForClass(Course);

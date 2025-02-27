@@ -2,7 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { UserRole } from 'src/common/enums/user-role.enum';
 
 @ObjectType()
-export class User {
+export class UserType {
   @Field(() => ID)
   _id: string;
 
