@@ -1,8 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { CoursesService } from './courses.service';
 import { Course } from './entities/course.entity';
-import { CreateCourseInput } from './dto/create-course.input';
-import { UpdateCourseInput } from './dto/update-course.input';
+import { CreateCourseInput } from './inputs/create-course.input';
 
 @Resolver(() => Course)
 export class CoursesResolver {
@@ -23,10 +22,10 @@ export class CoursesResolver {
     return this.coursesService.findOne(id);
   }
 
-  @Mutation(() => Course)
-  updateCourse(@Args('updateCourseInput') updateCourseInput: UpdateCourseInput) {
-    return this.coursesService.update(updateCourseInput.id, updateCourseInput);
-  }
+  // @Mutation(() => Course)
+  // updateCourse(@Args('updateCourseInput') updateCourseInput: UpdateCourseInput) {
+  //   return this.coursesService.update(updateCourseInput.id, updateCourseInput);
+  // }
 
   @Mutation(() => Course)
   removeCourse(@Args('id', { type: () => Int }) id: number) {
