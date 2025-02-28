@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { CoursesService } from './courses.service';
 import { CreateCourseInput } from './inputs/create-course.input';
-import { Course } from './types/course.type';
+import { CourseType } from './types/course.type';
 import { User } from 'src/core/auth/schemas/user.schema';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -10,11 +10,11 @@ import { Roles } from 'src/common/decorators/role.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
-@Resolver(() => Course)
+@Resolver(() => CourseType)
 export class CoursesResolver {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @Mutation(() => Course)
+  @Mutation(() => CourseType)
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
   createCourse(
@@ -24,12 +24,12 @@ export class CoursesResolver {
     return this.coursesService.create(createCourseInput, user);
   }
 
-  @Query(() => [Course], { name: 'courses' })
+  @Query(() => [CourseType], { name: 'courses' })
   findAll() {
     return this.coursesService.findAll();
   }
 
-  @Query(() => Course, { name: 'course' })
+  @Query(() => CourseType, { name: 'course' })
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.coursesService.findOne(id);
   }
@@ -39,7 +39,7 @@ export class CoursesResolver {
   //   return this.coursesService.update(updateCourseInput.id, updateCourseInput);
   // }
 
-  @Mutation(() => Course)
+  @Mutation(() => CourseType)
   removeCourse(@Args('id', { type: () => Int }) id: number) {
     return this.coursesService.remove(id);
   }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCourseInput } from './inputs/create-course.input';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CourseDocument, Course } from './schemas/course.schema';
+import { Course, CourseDocument } from './schemas/course.schema';
 import { User } from 'src/core/auth/schemas/user.schema';
+import { CreateCourseInput } from './inputs/create-course.input';
 // import { UpdateCourseInput } from './dto/update-course.input';
 
 @Injectable()

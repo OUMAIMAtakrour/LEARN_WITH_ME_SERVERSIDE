@@ -3,7 +3,7 @@ import { User } from 'src/core/auth/schemas/user.schema';
 import { UserType } from 'src/core/auth/types/user.type';
 
 @ObjectType()
-export class Course {
+export class CourseType {
   @Field(() => ID)
   _id: string;
 
@@ -16,7 +16,7 @@ export class Course {
   @Field()
   certified: Boolean;
 
-  @Field(() => UserType) 
+  @Field(() => UserType)
   teacher: UserType;
 
   @Field()

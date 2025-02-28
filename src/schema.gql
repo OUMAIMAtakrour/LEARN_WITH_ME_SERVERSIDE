@@ -7,7 +7,7 @@ type AuthResponse {
   refresh_token: String
 }
 
-type Course {
+type CourseType {
   _id: ID!
   certified: Boolean!
   createdAt: DateTime!
@@ -34,15 +34,15 @@ input LoginInput {
 }
 
 type Mutation {
-  createCourse(createCourseInput: CreateCourseInput!): Course!
+  createCourse(createCourseInput: CreateCourseInput!): CourseType!
   login(input: LoginInput!): AuthResponse!
-  removeCourse(id: Int!): Course!
+  removeCourse(id: Int!): CourseType!
   signup(input: SignupInput!): UserType!
 }
 
 type Query {
-  course(id: Int!): Course!
-  courses: [Course!]!
+  course(id: Int!): CourseType!
+  courses: [CourseType!]!
   hello: String!
 }
 
