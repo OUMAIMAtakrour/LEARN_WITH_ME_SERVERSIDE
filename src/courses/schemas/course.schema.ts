@@ -2,8 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 
-import { User } from 'src/core/auth/schemas/user.schema';
-import { UserType } from 'src/core/auth/types/user.type';
+import { User, UserSchema } from 'src/core/auth/schemas/user.schema';
 
 export type CourseDocument = Course & Document;
 
@@ -25,12 +24,12 @@ export class Course {
   @Prop({ required: true })
   certified: boolean;
 
-  @Field(() => UserType)
+  @Field(() => User)
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: () => User })
   teacher: string;
 
   @Field()
-  createdAt: Date; // Automatically handled by timestamps
+  createdAt: Date; 
 
   @Field()
   updatedAt: Date;

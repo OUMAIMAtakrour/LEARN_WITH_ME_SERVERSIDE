@@ -12,7 +12,7 @@ type Course {
   certified: Boolean!
   createdAt: DateTime!
   description: String!
-  teacher: UserType!
+  teacher: User!
   title: String!
   updatedAt: DateTime!
 }
@@ -37,7 +37,7 @@ type Mutation {
   createCourse(createCourseInput: CreateCourseInput!): Course!
   login(input: LoginInput!): AuthResponse!
   removeCourse(id: ID!): Boolean!
-  signup(input: SignupInput!): UserType!
+  signup(input: SignupInput!): User!
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
 }
 
@@ -63,15 +63,16 @@ input UpdateCourseInput {
   title: String
 }
 
+type User {
+  _id: ID!
+  email: String!
+  name: String!
+  password: String!
+  role: UserRole!
+}
+
 enum UserRole {
   ADMIN
   STUDENT
   TEACHER
-}
-
-type UserType {
-  _id: ID!
-  email: String!
-  name: String!
-  role: UserRole!
 }

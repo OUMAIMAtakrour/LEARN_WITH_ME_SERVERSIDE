@@ -1,7 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { CoursesService } from './courses.service';
 import { CreateCourseInput } from './inputs/create-course.input';
-import { CourseType } from './types/course.type';
 import { User } from 'src/core/auth/schemas/user.schema';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/common/guards/auth.guard';
