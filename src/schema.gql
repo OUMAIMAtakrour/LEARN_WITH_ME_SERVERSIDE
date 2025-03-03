@@ -7,7 +7,7 @@ type AuthResponse {
   refresh_token: String
 }
 
-type CourseType {
+type Course {
   _id: ID!
   certified: Boolean!
   createdAt: DateTime!
@@ -34,16 +34,19 @@ input LoginInput {
 }
 
 type Mutation {
-  createCourse(createCourseInput: CreateCourseInput!): CourseType!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
   login(input: LoginInput!): AuthResponse!
-  removeCourse(id: Int!): CourseType!
+  removeCourse(id: ID!): Boolean!
   signup(input: SignupInput!): UserType!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
 }
 
 type Query {
-  course(id: Int!): CourseType!
-  courses: [CourseType!]!
+  course(id: ID!): Course!
+  courses: [Course!]!
+  coursesByTeacher(teacherId: ID!): [Course!]!
   hello: String!
+  myCourses: [Course!]!
 }
 
 input SignupInput {
@@ -51,6 +54,13 @@ input SignupInput {
   name: String!
   password: String!
   role: UserRole
+}
+
+input UpdateCourseInput {
+  certified: Boolean
+  description: String
+  id: ID!
+  title: String
 }
 
 enum UserRole {

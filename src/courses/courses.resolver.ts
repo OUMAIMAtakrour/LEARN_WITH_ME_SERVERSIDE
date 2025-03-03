@@ -10,12 +10,13 @@ import { Roles } from 'src/common/decorators/role.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UpdateCourseInput } from './inputs/UpdateInput';
+import { Course } from './schemas/course.schema';
 
-@Resolver(() => CourseType)
+@Resolver(() => Course)
 export class CoursesResolver {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @Mutation(() => CourseType)
+  @Mutation(() => Course)
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
   createCourse(
@@ -25,17 +26,17 @@ export class CoursesResolver {
     return this.coursesService.create(createCourseInput, user);
   }
 
-  @Query(() => [CourseType], { name: 'courses' })
+  @Query(() => [Course], { name: 'courses' })
   findAll() {
     return this.coursesService.findAll();
   }
 
-  @Query(() => CourseType, { name: 'course' })
+  @Query(() => Course, { name: 'course' })
   findOne(@Args('id', { type: () => ID }) id: string) {
     return this.coursesService.findOne(id);
   }
 
-  @Mutation(() => CourseType)
+  @Mutation(() => Course)
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
   updateCourse(
@@ -52,14 +53,14 @@ export class CoursesResolver {
     return this.coursesService.remove(id);
   }
 
-  @Query(() => [CourseType], { name: 'coursesByTeacher' })
+  @Query(() => [Course], { name: 'coursesByTeacher' })
   findCoursesByTeacher(
     @Args('teacherId', { type: () => ID }) teacherId: string,
   ) {
     return this.coursesService.findByTeacher(teacherId);
   }
 
-  @Query(() => [CourseType], { name: 'myCourses' })
+  @Query(() => [Course], { name: 'myCourses' })
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
   findMyCourses(@CurrentUser() user: User) {
