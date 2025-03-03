@@ -37,6 +37,7 @@ export class CoursesResolver {
 
   @Mutation(() => Course)
   @UseGuards(AuthGuard, RolesGuard)
+  
   @Roles(UserRole.TEACHER)
   updateCourse(
     @Args('updateCourseInput') updateCourseInput: UpdateCourseInput,
