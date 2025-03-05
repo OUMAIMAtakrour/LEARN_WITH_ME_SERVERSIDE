@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { CoursesService } from './courses.service';
 import { CreateCourseInput } from './inputs/create-course.input';
 import { User } from 'src/core/auth/schemas/user.schema';
-import { UseGuards } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
@@ -10,21 +10,30 @@ import { UserRole } from 'src/common/enums/user-role.enum';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UpdateCourseInput } from './inputs/UpdateInput';
 import { Course } from './schemas/course.schema';
+import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 
 @Resolver(() => Course)
 export class CoursesResolver {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    @Inject(CurrentUser) private readonly currentUser: User,
+  ) {}
 
   @Mutation(() => Course)
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.TEACHER)
-  createCourse(
+  async createCourse(
     @Args('createCourseInput') createCourseInput: CreateCourseInput,
-    @CurrentUser() user: User,
+    @Args({ name: 'courseImage', type: () => GraphQLUpload, nullable: true })
+    courseImage?: FileUpload,
+    @CurrentUser() user?: User,
   ) {
-    return this.coursesService.create(createCourseInput, user);
+    return this.coursesService.create(
+      createCourseInput,
+      user || this.currentUser,
+      courseImage,
+    );
   }
-
   @Query(() => [Course], { name: 'courses' })
   findAll() {
     return this.coursesService.findAll();
@@ -37,7 +46,6 @@ export class CoursesResolver {
 
   @Mutation(() => Course)
   @UseGuards(AuthGuard, RolesGuard)
-  
   @Roles(UserRole.TEACHER)
   updateCourse(
     @Args('updateCourseInput') updateCourseInput: UpdateCourseInput,

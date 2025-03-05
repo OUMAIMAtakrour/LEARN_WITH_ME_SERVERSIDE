@@ -6,12 +6,13 @@ import { Mongoose } from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 // import { config } from 'process';
 import config from './config/config';
 import { join } from 'path';
 import { CoursesModule } from './courses/courses.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
   imports: [
@@ -20,7 +21,9 @@ import { CoursesModule } from './courses/courses.module';
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+      // uploads: false,
       introspection: true,
+
       context: ({ req }) => ({ req }),
     }),
     ConfigModule.forRoot({
@@ -47,6 +50,7 @@ import { CoursesModule } from './courses/courses.module';
     UserModule,
     AuthModule,
     CoursesModule,
+    FileUploadModule,
   ],
 
   controllers: [],

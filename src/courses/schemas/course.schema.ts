@@ -28,8 +28,60 @@ export class Course {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: () => User })
   teacher: string;
 
+  @Field({ nullable: true })
+  @Prop()
+  courseImageUrl?: string;
+
+  @Field({ nullable: true })
+  @Prop()
+  courseImageKey?: string;
+
+  @Field(() => [Course], { defaultValue: [] })
+  @Prop({
+    type: [
+      {
+        url: String,
+        key: String,
+        title: String,
+        description: String,
+        duration: Number,
+        order: Number,
+      },
+    ],
+    default: [],
+  })
+  courseVideos: Array<{
+    url: string;
+    key: string;
+    title: string;
+    description?: string;
+    duration?: number;
+    order: number;
+  }>;
+
+  @Field(() => [Course], { defaultValue: [] })
+  @Prop({
+    type: [
+      {
+        url: String,
+        key: String,
+        title: String,
+        description: String,
+        order: Number,
+      },
+    ],
+    default: [],
+  })
+  courseDocuments: Array<{
+    url: string;
+    key: string;
+    title: string;
+    description?: string;
+    order: number;
+  }>;
+
   @Field()
-  createdAt: Date; 
+  createdAt: Date;
 
   @Field()
   updatedAt: Date;
