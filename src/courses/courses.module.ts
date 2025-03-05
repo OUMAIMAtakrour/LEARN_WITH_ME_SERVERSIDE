@@ -6,6 +6,7 @@ import { Course, CourseSchema } from './schemas/course.schema';
 import { AuthModule } from 'src/core/auth/auth.module';
 import { UserModule } from 'src/core/user/user.module';
 import { User, UserSchema } from 'src/core/auth/schemas/user.schema';
+import { FileUploadModule } from 'src/file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { User, UserSchema } from 'src/core/auth/schemas/user.schema';
     ]),
     AuthModule,
     UserModule,
+    FileUploadModule,
   ],
   providers: [CoursesResolver, CoursesService],
   exports: [CoursesService],

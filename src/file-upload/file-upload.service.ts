@@ -55,7 +55,6 @@ export class FileUploadService {
       await this.minioClient.makeBucket(this.bucketName, 'us-east-1');
       this.logger.log(`Bucket '${this.bucketName}' created successfully`);
 
-      // Set bucket policy to allow public access to objects
       const policy = {
         Version: '2012-10-17',
         Statement: [
@@ -85,15 +84,12 @@ export class FileUploadService {
         throw new BadRequestException('File is required');
       }
 
-      // Validate file type
       this.validateFileType(file, fileType);
 
-      // Generate a unique file name
       const extension = path.extname(file.originalname);
       const uniqueFileName = fileName || `${uuidv4()}${extension}`;
       const fileKey = `${fileType}/${uniqueFileName}`;
 
-      // Upload file to MinIO
       await this.minioClient.putObject(
         this.bucketName,
         fileKey,
@@ -104,7 +100,6 @@ export class FileUploadService {
         },
       );
 
-      // Generate public URL
       const fileUrl = this.cdnUrl
         ? `${this.cdnUrl}/${fileKey}`
         : `${this.useSSL ? 'https' : 'http'}://${this.endpoint}:${this.port}/${this.bucketName}/${fileKey}`;

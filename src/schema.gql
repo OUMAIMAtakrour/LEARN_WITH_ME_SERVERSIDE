@@ -10,6 +10,10 @@ type AuthResponse {
 type Course {
   _id: ID!
   certified: Boolean!
+  courseDocuments: [Course!]!
+  courseImageKey: String
+  courseImageUrl: String
+  courseVideos: [Course!]!
   createdAt: DateTime!
   description: String!
   teacher: User!
@@ -34,7 +38,7 @@ input LoginInput {
 }
 
 type Mutation {
-  createCourse(createCourseInput: CreateCourseInput!): Course!
+  createCourse(courseImage: Upload, createCourseInput: CreateCourseInput!): Course!
   login(input: LoginInput!): AuthResponse!
   removeCourse(id: ID!): Boolean!
   signup(input: SignupInput!): User!
@@ -63,11 +67,16 @@ input UpdateCourseInput {
   title: String
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
 type User {
   _id: ID!
   email: String!
   name: String!
   password: String!
+  profileImageKey: String
+  profileImageUrl: String
   role: UserRole!
 }
 

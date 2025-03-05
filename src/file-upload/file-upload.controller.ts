@@ -49,7 +49,6 @@ export class FileUploadController {
       throw new BadRequestException('No file uploaded');
     }
 
-    // You can use the user ID as part of the filename for better organization
     return this.fileUploadService.uploadFile(
       file,
       FileType.PROFILE_IMAGE,

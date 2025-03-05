@@ -16,7 +16,6 @@ import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 export class CoursesResolver {
   constructor(
     private readonly coursesService: CoursesService,
-    @Inject(CurrentUser) private readonly currentUser: User,
   ) {}
 
   @Mutation(() => Course)
@@ -30,7 +29,7 @@ export class CoursesResolver {
   ) {
     return this.coursesService.create(
       createCourseInput,
-      user || this.currentUser,
+      user ,
       courseImage,
     );
   }

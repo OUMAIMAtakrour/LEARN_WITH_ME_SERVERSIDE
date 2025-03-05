@@ -13,6 +13,7 @@ import { join } from 'path';
 import { CoursesModule } from './courses/courses.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { GraphQLModule } from '@nestjs/graphql';
+import { GraphQLUpload } from 'graphql-upload-ts';
 
 @Module({
   imports: [
@@ -21,8 +22,9 @@ import { GraphQLModule } from '@nestjs/graphql';
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      // uploads: false,
+      // uploads: false, 
       introspection: true,
+      resolvers:{Upload:GraphQLUpload},
 
       context: ({ req }) => ({ req }),
     }),

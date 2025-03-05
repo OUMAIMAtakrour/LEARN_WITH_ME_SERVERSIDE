@@ -7,6 +7,16 @@ import { CreateCourseInput } from './inputs/create-course.input';
 import { UpdateCourseInput } from './inputs/UpdateInput';
 import { FileUploadService } from 'src/file-upload/file-upload.service';
 import { FileType } from 'src/common/enums/file-type.enum';
+import { FileUpload } from 'graphql-upload-ts';
+
+async function streamToBuffer(stream): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+  });
+}
 
 @Injectable()
 export class CoursesService {
@@ -14,16 +24,25 @@ export class CoursesService {
     @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
     private fileUploadService: FileUploadService,
   ) {}
+
   async create(
     createCourseInput: CreateCourseInput,
     creator: User,
-    courseImage?: Express.Multer.File,
+    courseImage?: FileUpload,
   ): Promise<Course> {
-    // Validate course image if provided
     let imageUploadResult;
     if (courseImage) {
+      const { createReadStream, filename, mimetype } = courseImage;
+      const stream = createReadStream();
+      const buffer = await streamToBuffer(stream);
+
       imageUploadResult = await this.fileUploadService.uploadFile(
-        courseImage,
+        {
+          buffer,
+          originalname: filename,
+          mimetype,
+          size: buffer.length,
+        } as Express.Multer.File,
         FileType.COURSE_IMAGE,
       );
     }
@@ -31,7 +50,6 @@ export class CoursesService {
     const newCourse = new this.courseModel({
       ...createCourseInput,
       teacher: creator._id,
-      // Add image details if uploaded
       ...(imageUploadResult && {
         courseImageUrl: imageUploadResult.url,
         courseImageKey: imageUploadResult.key,
@@ -70,7 +88,6 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
-    // Delete old image if exists
     if (course.courseImageKey) {
       try {
         await this.fileUploadService.deleteFile(course.courseImageKey);
@@ -105,7 +122,6 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
-    // Get the highest order to place the new video at the end
     const highestOrder =
       course.courseVideos.length > 0
         ? Math.max(...course.courseVideos.map((v) => v.order))
@@ -144,7 +160,6 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
-    // Get the highest order
     const highestOrder =
       course.courseDocuments.length > 0
         ? Math.max(...course.courseDocuments.map((d) => d.order))
@@ -176,7 +191,6 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
-    // Delete the file from storage
     try {
       await this.fileUploadService.deleteFile(videoKey);
     } catch (error) {
@@ -204,7 +218,6 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
-    // Delete the file from storage
     try {
       await this.fileUploadService.deleteFile(documentKey);
     } catch (error) {
