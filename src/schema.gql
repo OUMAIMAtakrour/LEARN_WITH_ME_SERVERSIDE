@@ -10,7 +10,7 @@ type AuthResponse {
 type Course {
   _id: ID!
   certified: Boolean!
-  courseDocuments: [Course!]!
+  courseDocuments: [CourseDocumentType!]!
   courseImageKey: String
   courseImageUrl: String
   courseVideos: [Course!]!
@@ -19,6 +19,14 @@ type Course {
   teacher: User!
   title: String!
   updatedAt: DateTime!
+}
+
+type CourseDocumentType {
+  description: String
+  key: String!
+  order: Float!
+  title: String!
+  url: String!
 }
 
 input CreateCourseInput {
@@ -38,17 +46,21 @@ input LoginInput {
 }
 
 type Mutation {
-  createCourse(courseImage: Upload, createCourseInput: CreateCourseInput!): Course!
+  addCourseDocument(courseId: String!, description: String, document: Upload!, title: String!): Course!
+  addCourseVideo(courseId: String!, description: String, duration: Float, title: String!, video: Upload!): Course!
+  createCourse(image: Upload, input: CreateCourseInput!): Course!
+  deleteCourse(id: String!): Boolean!
   login(input: LoginInput!): AuthResponse!
-  removeCourse(id: ID!): Boolean!
+  removeCourseDocument(courseId: String!, documentKey: String!): Course!
+  removeCourseVideo(courseId: String!, videoKey: String!): Course!
   signup(input: SignupInput!): User!
-  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
+  updateCourse(id: String!, input: UpdateCourseInput!): Course!
+  updateCourseImage(courseId: String!, image: Upload!): Course!
 }
 
 type Query {
-  course(id: ID!): Course!
+  course(id: String!): Course!
   courses: [Course!]!
-  coursesByTeacher(teacherId: ID!): [Course!]!
   hello: String!
   myCourses: [Course!]!
 }

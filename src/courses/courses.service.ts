@@ -234,6 +234,7 @@ export class CoursesService {
       )
       .exec();
   }
+
   async update(
     id: string,
     updateCourseInput: UpdateCourseInput,

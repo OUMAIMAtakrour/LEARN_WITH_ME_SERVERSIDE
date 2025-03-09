@@ -1,19 +1,17 @@
-import { Inject, Module } from '@nestjs/common';
-
-import { UserModule } from './core/user/user.module';
-import { AuthModule } from './core/auth/auth.module';
-import { Mongoose } from 'mongoose';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-// import { config } from 'process';
-import config from './config/config';
+import { GraphQLModule } from '@nestjs/graphql';
+
 import { join } from 'path';
+import { GraphQLUpload } from 'graphql-upload-ts';
+import config from './config/config';
 import { CoursesModule } from './courses/courses.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
-import { GraphQLModule } from '@nestjs/graphql';
-import { GraphQLUpload } from 'graphql-upload-ts';
+import { UserModule } from './core/user/user.module';
+import { AuthModule } from './core/auth/auth.module';
 
 @Module({
   imports: [
@@ -22,11 +20,13 @@ import { GraphQLUpload } from 'graphql-upload-ts';
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      // uploads: false, 
       introspection: true,
-      resolvers:{Upload:GraphQLUpload},
-
       context: ({ req }) => ({ req }),
+      // Make sure this is compatible with your graphql-upload-ts version
+      resolvers: {
+        Upload: GraphQLUpload,
+      },
+     
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -39,7 +39,6 @@ import { GraphQLUpload } from 'graphql-upload-ts';
         secret: config.get('jwt.secret'),
       }),
       global: true,
-
       inject: [ConfigService],
     }),
     MongooseModule.forRootAsync({
@@ -54,7 +53,6 @@ import { GraphQLUpload } from 'graphql-upload-ts';
     CoursesModule,
     FileUploadModule,
   ],
-
   controllers: [],
   providers: [],
 })

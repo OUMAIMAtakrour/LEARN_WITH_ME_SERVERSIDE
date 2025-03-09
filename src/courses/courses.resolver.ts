@@ -1,76 +1,167 @@
-import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CreateCourseInput } from './inputs/create-course.input';
-import { User } from 'src/core/auth/schemas/user.schema';
-import { Inject, UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/common/guards/auth.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Roles } from 'src/common/decorators/role.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { UpdateCourseInput } from './inputs/UpdateInput';
 import { Course } from './schemas/course.schema';
+import { CreateCourseInput } from './inputs/create-course.input';
+import { UpdateCourseInput } from './inputs/UpdateInput';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from 'src/core/auth/schemas/user.schema';
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
+import { processUpload } from 'src/file-upload/file-upload.resolver';
+import { FileUploadService } from 'src/file-upload/file-upload.service';
+import { FileType } from 'src/common/enums/file-type.enum';
+import * as path from 'path';
 
 @Resolver(() => Course)
 export class CoursesResolver {
   constructor(
     private readonly coursesService: CoursesService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
-  @Mutation(() => Course)
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.TEACHER)
-  async createCourse(
-    @Args('createCourseInput') createCourseInput: CreateCourseInput,
-    @Args({ name: 'courseImage', type: () => GraphQLUpload, nullable: true })
-    courseImage?: FileUpload,
-    @CurrentUser() user?: User,
-  ) {
-    return this.coursesService.create(
-      createCourseInput,
-      user ,
-      courseImage,
-    );
-  }
-  @Query(() => [Course], { name: 'courses' })
-  findAll() {
+  @Query(() => [Course])
+  async courses(): Promise<Course[]> {
     return this.coursesService.findAll();
   }
 
-  @Query(() => Course, { name: 'course' })
-  findOne(@Args('id', { type: () => ID }) id: string) {
+  @Query(() => Course)
+  async course(@Args('id') id: string): Promise<Course> {
     return this.coursesService.findOne(id);
   }
 
+  @Query(() => [Course])
+  @UseGuards(AuthGuard)
+  async myCourses(@CurrentUser() user: User): Promise<Course[]> {
+    return this.coursesService.findByTeacher(user._id.toString());
+  }
+
   @Mutation(() => Course)
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.TEACHER)
-  updateCourse(
-    @Args('updateCourseInput') updateCourseInput: UpdateCourseInput,
+  @UseGuards(AuthGuard)
+  async createCourse(
+    @Args('input') createCourseInput: CreateCourseInput,
+    @Args({ name: 'image', type: () => GraphQLUpload, nullable: true })
+    image: FileUpload,
     @CurrentUser() user: User,
-  ) {
-    return this.coursesService.update(updateCourseInput.id, updateCourseInput);
+  ): Promise<Course> {
+    return this.coursesService.create(createCourseInput, user, image);
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async updateCourse(
+    @Args('id') id: string,
+    @Args('input') updateCourseInput: UpdateCourseInput,
+  ): Promise<Course> {
+    return this.coursesService.update(id, updateCourseInput);
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async updateCourseImage(
+    @Args('courseId') courseId: string,
+    @Args({ name: 'image', type: () => GraphQLUpload })
+    image: FileUpload,
+  ): Promise<Course> {
+    const file = await processUpload(image);
+
+    const uploadResult = await this.fileUploadService.uploadFile(
+      file,
+      FileType.COURSE_IMAGE,
+      `course-${courseId}${path.extname(file.originalname)}`,
+    );
+
+    return this.coursesService.updateCourseImage(
+      courseId,
+      uploadResult.url,
+      uploadResult.key,
+    );
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async addCourseVideo(
+    @Args('courseId') courseId: string,
+    @Args({ name: 'video', type: () => GraphQLUpload })
+    video: FileUpload,
+    @Args('title') title: string,
+    @Args('description', { nullable: true }) description?: string,
+    @Args('duration', { nullable: true, type: () => Number }) duration?: number,
+  ): Promise<Course> {
+    const file = await processUpload(video);
+
+    const uploadResult = await this.fileUploadService.uploadFile(
+      file,
+      FileType.COURSE_VIDEO,
+      `course-${courseId}-video-${Date.now()}${path.extname(file.originalname)}`,
+    );
+
+    return this.coursesService.addCourseVideo(
+      courseId,
+      uploadResult.url,
+      uploadResult.key,
+      title,
+      description,
+      duration,
+    );
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async addCourseDocument(
+    @Args('courseId') courseId: string,
+    @Args({ name: 'document', type: () => GraphQLUpload })
+    document: FileUpload,
+    @Args('title') title: string,
+    @Args('description', { nullable: true }) description?: string,
+  ): Promise<Course> {
+    if (!document) {
+      throw new BadRequestException('No document file provided');
+    }
+
+    const file = await processUpload(document);
+    if (!file || !file.originalname) {
+      throw new BadRequestException('Failed to process document upload');
+    }
+
+    const extension = path.extname(file.originalname);
+
+    const uploadResult = await this.fileUploadService.uploadFile(
+      file,
+      FileType.COURSE_DOCUMENT,
+      `course-${courseId}-doc-${Date.now()}${extension}`,
+    );
+
+    return this.coursesService.addCourseDocument(
+      courseId,
+      uploadResult.url,
+      uploadResult.key,
+      title,
+      description,
+    );
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async removeCourseVideo(
+    @Args('courseId') courseId: string,
+    @Args('videoKey') videoKey: string,
+  ): Promise<Course> {
+    return this.coursesService.removeCourseVideo(courseId, videoKey);
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async removeCourseDocument(
+    @Args('courseId') courseId: string,
+    @Args('documentKey') documentKey: string,
+  ): Promise<Course> {
+    return this.coursesService.removeCourseDocument(courseId, documentKey);
   }
 
   @Mutation(() => Boolean)
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.TEACHER, UserRole.ADMIN)
-  removeCourse(@Args('id', { type: () => ID }) id: string) {
+  @UseGuards(AuthGuard)
+  async deleteCourse(@Args('id') id: string): Promise<boolean> {
     return this.coursesService.remove(id);
-  }
-
-  @Query(() => [Course], { name: 'coursesByTeacher' })
-  findCoursesByTeacher(
-    @Args('teacherId', { type: () => ID }) teacherId: string,
-  ) {
-    return this.coursesService.findByTeacher(teacherId);
-  }
-
-  @Query(() => [Course], { name: 'myCourses' })
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.TEACHER)
-  findMyCourses(@CurrentUser() user: User) {
-    return this.coursesService.findByTeacher(user._id.toString());
   }
 }

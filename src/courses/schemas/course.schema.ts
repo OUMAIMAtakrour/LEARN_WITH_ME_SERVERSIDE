@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-
-import { User, UserSchema } from 'src/core/auth/schemas/user.schema';
+import { User } from 'src/core/auth/schemas/user.schema';
 
 export type CourseDocument = Course & Document;
 
@@ -25,7 +24,7 @@ export class Course {
   certified: boolean;
 
   @Field(() => User)
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: () => User })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name })
   teacher: string;
 
   @Field({ nullable: true })
@@ -50,16 +49,16 @@ export class Course {
     ],
     default: [],
   })
-  courseVideos: Array<{
+  courseVideos: {
     url: string;
     key: string;
     title: string;
     description?: string;
     duration?: number;
     order: number;
-  }>;
+  }[];
 
-  @Field(() => [Course], { defaultValue: [] })
+  @Field(() => [CourseDocumentType], { defaultValue: [] })
   @Prop({
     type: [
       {
@@ -86,4 +85,22 @@ export class Course {
   @Field()
   updatedAt: Date;
 }
+@ObjectType()
+export class CourseDocumentType {
+  @Field()
+  url: string;
+
+  @Field()
+  key: string;
+
+  @Field()
+  title: string;
+
+  @Field({ nullable: true })
+  description?: string;
+
+  @Field()
+  order: number;
+}
+
 export const CourseSchema = SchemaFactory.createForClass(Course);
