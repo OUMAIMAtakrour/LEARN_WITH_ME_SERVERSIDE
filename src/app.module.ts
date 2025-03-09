@@ -12,6 +12,7 @@ import { CoursesModule } from './courses/courses.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { UserModule } from './core/user/user.module';
 import { AuthModule } from './core/auth/auth.module';
+import { BadgesModule } from './badges/badges.module';
 
 @Module({
   imports: [
@@ -22,7 +23,6 @@ import { AuthModule } from './core/auth/auth.module';
       sortSchema: true,
       introspection: true,
       context: ({ req }) => ({ req }),
-      // Make sure this is compatible with your graphql-upload-ts version
       resolvers: {
         Upload: GraphQLUpload,
       },
@@ -52,6 +52,7 @@ import { AuthModule } from './core/auth/auth.module';
     AuthModule,
     CoursesModule,
     FileUploadModule,
+    BadgesModule,
   ],
   controllers: [],
   providers: [],
