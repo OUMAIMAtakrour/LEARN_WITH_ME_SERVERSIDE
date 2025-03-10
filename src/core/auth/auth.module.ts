@@ -7,6 +7,7 @@ import {
   RefreshTokenSchema,
 } from 'src/core/auth/schemas/refresh-token.schema';
 import { AuthResolver } from 'src/core/auth/auth.resolver';
+import { FileUploadService } from 'src/file-upload/file-upload.service';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { AuthResolver } from 'src/core/auth/auth.resolver';
       },
     ]),
   ],
-  providers: [AuthService, AuthResolver],
+  providers: [AuthService, AuthResolver, FileUploadService],
 })
 export class AuthModule {}

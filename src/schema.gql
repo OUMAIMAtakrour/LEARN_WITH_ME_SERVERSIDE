@@ -7,6 +7,11 @@ type AuthResponse {
   refresh_token: String
 }
 
+type Badge {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Course {
   _id: ID!
   certified: Boolean!
@@ -29,6 +34,11 @@ type CourseDocumentType {
   url: String!
 }
 
+input CreateBadgeInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 input CreateCourseInput {
   certified: Boolean!
   description: String!
@@ -48,17 +58,23 @@ input LoginInput {
 type Mutation {
   addCourseDocument(courseId: String!, description: String, document: Upload!, title: String!): Course!
   addCourseVideo(courseId: String!, description: String, duration: Float, title: String!, video: Upload!): Course!
+  createBadge(createBadgeInput: CreateBadgeInput!): Badge!
   createCourse(image: Upload, input: CreateCourseInput!): Course!
   deleteCourse(id: String!): Boolean!
   login(input: LoginInput!): AuthResponse!
+  removeBadge(id: Int!): Badge!
   removeCourseDocument(courseId: String!, documentKey: String!): Course!
   removeCourseVideo(courseId: String!, videoKey: String!): Course!
-  signup(input: SignupInput!): User!
+  signup(input: SignupInput!, profileImage: Upload): User!
+  updateBadge(updateBadgeInput: UpdateBadgeInput!): Badge!
   updateCourse(id: String!, input: UpdateCourseInput!): Course!
   updateCourseImage(courseId: String!, image: Upload!): Course!
+  updateProfileImage(profileImage: Upload!): User!
 }
 
 type Query {
+  badge(id: Int!): Badge!
+  badges: [Badge!]!
   course(id: String!): Course!
   courses: [Course!]!
   hello: String!
@@ -70,6 +86,12 @@ input SignupInput {
   name: String!
   password: String!
   role: UserRole
+}
+
+input UpdateBadgeInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
 
 input UpdateCourseInput {
