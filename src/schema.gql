@@ -8,8 +8,11 @@ type AuthResponse {
 }
 
 type Badge {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  _id: ID!
+  description: String!
+  imageUrl: String!
+  name: String!
+  pointsRequired: Float!
 }
 
 type Course {
@@ -77,7 +80,6 @@ type Query {
   badges: [Badge!]!
   course(id: String!): Course!
   courses: [Course!]!
-  hello: String!
   myCourses: [Course!]!
 }
 

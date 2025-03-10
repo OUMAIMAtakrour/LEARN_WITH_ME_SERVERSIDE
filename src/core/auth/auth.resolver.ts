@@ -35,8 +35,8 @@ export class AuthResolver {
     return this.authService.updateProfileImage(user._id.toString(), profileImage);
   }
 
-  @Query(() => String)
-  hello() {
-    return 'Hello World!';
-  }
+  // @Query(() => String)
+  // hello() {
+  //   return 'Hello World!';
+  // }
 }

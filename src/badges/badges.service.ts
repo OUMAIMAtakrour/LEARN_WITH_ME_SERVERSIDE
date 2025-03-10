@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBadgeInput } from './dto/create-badge.input';
-import { UpdateBadgeInput } from './dto/update-badge.input';
+import { CreateBadgeInput } from './inputs/create-badge.input';
+import { UpdateBadgeInput } from './inputs/update-badge.input';
 
 @Injectable()
 export class BadgesService {

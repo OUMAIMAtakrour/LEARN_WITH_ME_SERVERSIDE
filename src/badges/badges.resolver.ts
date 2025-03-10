@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { BadgesService } from './badges.service';
-import { Badge } from './entities/badge.entity';
-import { CreateBadgeInput } from './dto/create-badge.input';
-import { UpdateBadgeInput } from './dto/update-badge.input';
+import { Badge } from './schemas/badge.schema';
+import { CreateBadgeInput } from './inputs/create-badge.input';
+import { UpdateBadgeInput } from './inputs/update-badge.input';
 
 @Resolver(() => Badge)
 export class BadgesResolver {
