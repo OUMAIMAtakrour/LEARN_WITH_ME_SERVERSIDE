@@ -35,6 +35,10 @@ export class User extends Document {
   @Field({ nullable: true })
   @Prop()
   profileImageKey?: string;
+
+  @Field(() => Number, { defaultValue: 0 })
+  @Prop({ default: 0 })
+  points: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

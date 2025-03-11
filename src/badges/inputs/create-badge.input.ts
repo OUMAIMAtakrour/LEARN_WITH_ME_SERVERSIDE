@@ -2,6 +2,15 @@ import { InputType, Int, Field } from '@nestjs/graphql';
 
 @InputType()
 export class CreateBadgeInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field()
+  name: string;
+
+  @Field()
+  description: string;
+
+  @Field()
+  imageUrl: string;
+
+  @Field(() => Int)
+  pointsRequired: number;
 }

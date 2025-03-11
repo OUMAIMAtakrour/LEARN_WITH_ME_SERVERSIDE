@@ -38,8 +38,10 @@ type CourseDocumentType {
 }
 
 input CreateBadgeInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  description: String!
+  imageUrl: String!
+  name: String!
+  pointsRequired: Int!
 }
 
 input CreateCourseInput {
@@ -91,9 +93,11 @@ input SignupInput {
 }
 
 input UpdateBadgeInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  description: String
   id: Int!
+  imageUrl: String
+  name: String
+  pointsRequired: Int
 }
 
 input UpdateCourseInput {
@@ -111,6 +115,7 @@ type User {
   email: String!
   name: String!
   password: String!
+  points: Float!
   profileImageKey: String
   profileImageUrl: String
   role: UserRole!
