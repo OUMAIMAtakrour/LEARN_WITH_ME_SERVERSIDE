@@ -13,6 +13,8 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { UserModule } from './core/user/user.module';
 import { AuthModule } from './core/auth/auth.module';
 import { BadgesModule } from './badges/badges.module';
+import { CourseProgressModule } from './course-progress/course-progress.module';
+
 
 @Module({
   imports: [
@@ -26,7 +28,6 @@ import { BadgesModule } from './badges/badges.module';
       resolvers: {
         Upload: GraphQLUpload,
       },
-     
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -53,6 +54,7 @@ import { BadgesModule } from './badges/badges.module';
     CoursesModule,
     FileUploadModule,
     BadgesModule,
+    CourseProgressModule,
   ],
   controllers: [],
   providers: [],

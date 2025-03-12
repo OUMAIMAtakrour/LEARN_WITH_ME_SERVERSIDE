@@ -6,7 +6,7 @@ import { Document } from 'mongoose';
 @Schema()
 export class Badge extends Document {
   @Field(() => ID)
-  @Prop()
+
   _id: string;
 
   @Field()

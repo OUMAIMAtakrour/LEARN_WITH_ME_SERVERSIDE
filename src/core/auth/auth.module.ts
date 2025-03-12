@@ -8,6 +8,8 @@ import {
 } from 'src/core/auth/schemas/refresh-token.schema';
 import { AuthResolver } from 'src/core/auth/auth.resolver';
 import { FileUploadService } from 'src/file-upload/file-upload.service';
+import { BadgesService } from 'src/badges/badges.service';
+import { BadgesModule } from 'src/badges/badges.module';
 
 @Module({
   imports: [
@@ -21,7 +23,17 @@ import { FileUploadService } from 'src/file-upload/file-upload.service';
         schema: RefreshTokenSchema,
       },
     ]),
+    BadgesModule,
   ],
   providers: [AuthService, AuthResolver, FileUploadService],
+  exports: [
+    MongooseModule.forFeature([
+      {
+        name: User.name,
+        schema: UserSchema,
+      },
+    ]),
+    AuthService, 
+  ],
 })
 export class AuthModule {}

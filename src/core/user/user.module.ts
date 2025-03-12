@@ -1,7 +1,10 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/core/auth/schemas/user.schema';
+import { BadgesService } from 'src/badges/badges.service';
+import { UserPointsService } from './user-points.service';
+import { BadgesModule } from 'src/badges/badges.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -10,10 +13,12 @@ import { User, UserSchema } from 'src/core/auth/schemas/user.schema';
         schema: UserSchema,
       },
     ]),
+    forwardRef(() => BadgesModule),
   ],
-  providers: [UserService],
+  providers: [UserService, UserPointsService, BadgesService],
   exports: [
     UserService,
+    UserPointsService,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
 })

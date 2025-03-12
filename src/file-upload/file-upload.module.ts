@@ -6,7 +6,6 @@ import { UserModule } from 'src/core/user/user.module';
 
 @Module({
   imports: [ConfigModule,UserModule],
-  // controllers: [FileUploadController],
   providers: [FileUploadService],
   exports: [FileUploadService],
 })

@@ -63,26 +63,27 @@ input LoginInput {
 type Mutation {
   addCourseDocument(courseId: String!, description: String, document: Upload!, title: String!): Course!
   addCourseVideo(courseId: String!, description: String, duration: Float, title: String!, video: Upload!): Course!
-  createBadge(createBadgeInput: CreateBadgeInput!): Badge!
+  createBadge(input: CreateBadgeInput!): Badge!
   createCourse(image: Upload, input: CreateCourseInput!): Course!
   deleteCourse(id: String!): Boolean!
   login(input: LoginInput!): AuthResponse!
-  removeBadge(id: Int!): Badge!
+  removeBadge(id: ID!): Boolean!
   removeCourseDocument(courseId: String!, documentKey: String!): Course!
   removeCourseVideo(courseId: String!, videoKey: String!): Course!
   signup(input: SignupInput!, profileImage: Upload): User!
-  updateBadge(updateBadgeInput: UpdateBadgeInput!): Badge!
+  updateBadge(id: ID!, input: UpdateBadgeInput!): Badge!
   updateCourse(id: String!, input: UpdateCourseInput!): Course!
   updateCourseImage(courseId: String!, image: Upload!): Course!
   updateProfileImage(profileImage: Upload!): User!
 }
 
 type Query {
-  badge(id: Int!): Badge!
+  badge(id: ID!): Badge!
   badges: [Badge!]!
   course(id: String!): Course!
   courses: [Course!]!
   myCourses: [Course!]!
+  userBadges(userId: ID!): [UserBadge!]!
 }
 
 input SignupInput {
@@ -121,8 +122,21 @@ type User {
   role: UserRole!
 }
 
+type UserBadge {
+  _id: ID!
+  badge: Badge!
+  earnedAt: DateTime!
+  user: User!
+}
+
 enum UserRole {
   ADMIN
   STUDENT
   TEACHER
+}
+
+type VideoProgress {
+  completed: Boolean!
+  videoId: String!
+  watchedSeconds: Float!
 }
