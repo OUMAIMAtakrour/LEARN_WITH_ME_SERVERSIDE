@@ -14,6 +14,7 @@ import { UserModule } from './core/user/user.module';
 import { AuthModule } from './core/auth/auth.module';
 import { BadgesModule } from './badges/badges.module';
 import { CourseProgressModule } from './course-progress/course-progress.module';
+import { CertificatesModule } from './certificates/certificates.module';
 
 
 @Module({
@@ -55,6 +56,7 @@ import { CourseProgressModule } from './course-progress/course-progress.module';
     FileUploadModule,
     BadgesModule,
     CourseProgressModule,
+    CertificatesModule,
   ],
   controllers: [],
   providers: [],
