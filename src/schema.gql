@@ -37,6 +37,17 @@ type CourseDocumentType {
   url: String!
 }
 
+type CourseProgress {
+  _id: ID!
+  completed: Boolean!
+  completedAt: DateTime
+  courseId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  userId: String!
+  videosProgress: [VideoProgress!]!
+}
+
 input CreateBadgeInput {
   description: String!
   imageUrl: String!
@@ -48,6 +59,11 @@ input CreateCourseInput {
   certified: Boolean!
   description: String!
   title: String!
+}
+
+input CreateCourseProgressInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
 }
 
 """
@@ -63,25 +79,36 @@ input LoginInput {
 type Mutation {
   addCourseDocument(courseId: String!, description: String, document: Upload!, title: String!): Course!
   addCourseVideo(courseId: String!, description: String, duration: Float, title: String!, video: Upload!): Course!
+  checkAndAwardBadges(points: Float!, userId: ID!): [UserBadge!]!
   createBadge(input: CreateBadgeInput!): Badge!
   createCourse(image: Upload, input: CreateCourseInput!): Course!
+  createCourseProgress(input: CreateCourseProgressInput!): CourseProgress!
   deleteCourse(id: String!): Boolean!
   login(input: LoginInput!): AuthResponse!
+  markCourseAsCompleted(courseId: String!, userId: String!): CourseProgress!
   removeBadge(id: ID!): Boolean!
   removeCourseDocument(courseId: String!, documentKey: String!): Course!
+  removeCourseProgress(id: ID!): CourseProgress!
   removeCourseVideo(courseId: String!, videoKey: String!): Course!
   signup(input: SignupInput!, profileImage: Upload): User!
   updateBadge(id: ID!, input: UpdateBadgeInput!): Badge!
   updateCourse(id: String!, input: UpdateCourseInput!): Course!
   updateCourseImage(courseId: String!, image: Upload!): Course!
+  updateCourseProgress(id: ID!, input: UpdateCourseProgressInput!): CourseProgress!
   updateProfileImage(profileImage: Upload!): User!
+  updateVideoProgress(courseId: String!, userId: String!, videoId: String!, watchedSeconds: Float!): CourseProgress!
 }
 
 type Query {
   badge(id: ID!): Badge!
   badges: [Badge!]!
+  completedCourses(userId: String!): [String!]!
   course(id: String!): Course!
+  courseProgress(id: ID!): CourseProgress!
+  courseProgresses: [CourseProgress!]!
   courses: [Course!]!
+  isCourseCompleted(courseId: String!, userId: String!): Boolean!
+  myBadges: [UserBadge!]!
   myCourses: [Course!]!
   userBadges(userId: ID!): [UserBadge!]!
 }
@@ -106,6 +133,12 @@ input UpdateCourseInput {
   description: String
   id: ID!
   title: String
+}
+
+input UpdateCourseProgressInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
 
 """The `Upload` scalar type represents a file upload."""

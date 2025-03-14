@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Badge } from './schemas/badge.schema';
@@ -60,7 +65,6 @@ export class BadgesService {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-  
     const eligibleBadges = await this.badgeModel
       .find({ pointsRequired: { $lte: points } })
       .exec();

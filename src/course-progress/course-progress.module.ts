@@ -1,7 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { CourseProgressService } from './course-progress.service';
 import { CourseProgressResolver } from './course-progress.resolver';
-import { CoursesService } from 'src/courses/courses.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   CourseProgress,
@@ -19,7 +18,7 @@ import { UserPointsService } from 'src/core/user/user-points.service';
     ]),
     forwardRef(() => UserModule),
   ],
-  providers: [CourseProgressService],
+  providers: [CourseProgressService, CourseProgressResolver],
   exports: [CourseProgressService],
 })
 export class CourseProgressModule {}
