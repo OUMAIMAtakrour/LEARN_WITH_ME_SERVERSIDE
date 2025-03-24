@@ -6,6 +6,45 @@ import { User } from 'src/core/auth/schemas/user.schema';
 export type CourseDocument = Course & Document;
 
 @ObjectType()
+export class CourseVideo {
+  @Field()
+  url: string;
+
+  @Field()
+  key: string;
+
+  @Field()
+  title: string;
+
+  @Field({ nullable: true })
+  description?: string;
+
+  @Field({ nullable: true })
+  duration?: number;
+
+  @Field()
+  order: number;
+}
+
+@ObjectType()
+export class CourseDocumentType {
+  @Field()
+  url: string;
+
+  @Field()
+  key: string;
+
+  @Field()
+  title: string;
+
+  @Field({ nullable: true })
+  description?: string;
+
+  @Field()
+  order: number;
+}
+
+@ObjectType()
 @Schema({ timestamps: true })
 export class Course {
   @Field(() => ID)
@@ -23,9 +62,17 @@ export class Course {
   @Prop({ required: true })
   certified: boolean;
 
+  @Field()
+  @Prop({ required: true })
+  category: string;
+
+  @Field(() => Number, { nullable: true })
+  @Prop({ default: 0 })
+  totalDuration?: number;
+
   @Field(() => User)
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name })
-  teacher: string;
+  teacher: User;
 
   @Field({ nullable: true })
   @Prop()
@@ -35,7 +82,7 @@ export class Course {
   @Prop()
   courseImageKey?: string;
 
-  @Field(() => [Course], { defaultValue: [] })
+  @Field(() => [CourseVideo], { defaultValue: [] })
   @Prop({
     type: [
       {
@@ -49,14 +96,7 @@ export class Course {
     ],
     default: [],
   })
-  courseVideos: {
-    url: string;
-    key: string;
-    title: string;
-    description?: string;
-    duration?: number;
-    order: number;
-  }[];
+  courseVideos: CourseVideo[];
 
   @Field(() => [CourseDocumentType], { defaultValue: [] })
   @Prop({
@@ -71,36 +111,13 @@ export class Course {
     ],
     default: [],
   })
-  courseDocuments: Array<{
-    url: string;
-    key: string;
-    title: string;
-    description?: string;
-    order: number;
-  }>;
+  courseDocuments: CourseDocumentType[];
 
   @Field()
   createdAt: Date;
 
   @Field()
   updatedAt: Date;
-}
-@ObjectType()
-export class CourseDocumentType {
-  @Field()
-  url: string;
-
-  @Field()
-  key: string;
-
-  @Field()
-  title: string;
-
-  @Field({ nullable: true })
-  description?: string;
-
-  @Field()
-  order: number;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

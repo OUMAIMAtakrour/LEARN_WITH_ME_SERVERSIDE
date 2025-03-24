@@ -16,11 +16,30 @@ export class CourseProgressService {
     private userPointsService: UserPointsService,
   ) {}
 
-  async create(
-    createCourseProgressInput: CreateCourseProgressInput,
-  ): Promise<CourseProgress> {
+  async create({
+    userId,
+    courseId,
+  }: {
+    userId: string;
+    courseId: string;
+  }): Promise<CourseProgress> {
+    // First check if the user is already enrolled in this course
+    const existingProgress = await this.progressModel
+      .findOne({
+        userId,
+        courseId,
+      })
+      .exec();
+
+    if (existingProgress) {
+      // Return the existing progress instead of creating a duplicate
+      return existingProgress;
+    }
+
+    // If not enrolled, create a new progress record
     const newProgress = new this.progressModel({
-      ...createCourseProgressInput,
+      userId,
+      courseId,
       videosProgress: [],
       completed: false,
     });
@@ -31,11 +50,30 @@ export class CourseProgressService {
     return this.progressModel.find().exec();
   }
 
-  async findOne(id: number): Promise<CourseProgress> {
+  async findOne(id: string): Promise<CourseProgress> {
+    // Changed parameter type to string
     const progress = await this.progressModel.findById(id).exec();
     if (!progress) {
       throw new NotFoundException(`Course progress with ID ${id} not found`);
     }
+    return progress;
+  }
+  // In your course-progress.service.ts
+  async findByCourseAndUser(
+    courseId: string,
+    userId: string,
+  ): Promise<CourseProgress> {
+    const progress = await this.progressModel
+      .findOne({
+        courseId,
+        userId,
+      })
+      .exec();
+
+    if (!progress) {
+      throw new NotFoundException(`You are not enrolled in this course`);
+    }
+
     return progress;
   }
 
@@ -109,7 +147,7 @@ export class CourseProgressService {
     }
 
     const videoDuration = videoFromCourse.duration || 0;
-    const isVideoCompleted = watchedSeconds >= videoDuration * 0.9; 
+    const isVideoCompleted = watchedSeconds >= videoDuration * 0.9;
 
     if (videoIndex >= 0) {
       progress.videosProgress[videoIndex].watchedSeconds = watchedSeconds;

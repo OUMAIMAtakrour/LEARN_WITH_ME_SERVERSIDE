@@ -25,6 +25,12 @@ export class CoursesService {
     private fileUploadService: FileUploadService,
   ) {}
 
+  private calculateTotalDuration(courseVideos: any[]): number {
+    return courseVideos.reduce((total, video) => {
+      return total + (video.duration || 0);
+    }, 0);
+  }
+
   async create(
     createCourseInput: CreateCourseInput,
     creator: User,
@@ -50,6 +56,7 @@ export class CoursesService {
     const newCourse = new this.courseModel({
       ...createCourseInput,
       teacher: creator._id,
+      totalDuration: 0, // Initialize total duration as 0
       ...(imageUploadResult && {
         courseImageUrl: imageUploadResult.url,
         courseImageKey: imageUploadResult.key,
@@ -132,15 +139,22 @@ export class CoursesService {
       key: videoKey,
       title,
       description,
-      duration,
+      duration: duration || 0,
       order: highestOrder + 1,
     };
+
+    // Calculate the new total duration
+    const newTotalDuration = this.calculateTotalDuration([
+      ...course.courseVideos,
+      newVideo,
+    ]);
 
     return this.courseModel
       .findByIdAndUpdate(
         courseId,
         {
           $push: { courseVideos: newVideo },
+          totalDuration: newTotalDuration,
         },
         { new: true },
       )
@@ -191,17 +205,28 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
+    // Find the video to be removed
+    const videoToRemove = course.courseVideos.find((v) => v.key === videoKey);
+    if (!videoToRemove) {
+      throw new NotFoundException(`Video with key '${videoKey}' not found`);
+    }
+
     try {
       await this.fileUploadService.deleteFile(videoKey);
     } catch (error) {
       console.error('Failed to delete course video:', error);
     }
 
+    // Calculate new total duration by subtracting the removed video's duration
+    const newTotalDuration =
+      course.totalDuration - (videoToRemove.duration || 0);
+
     return this.courseModel
       .findByIdAndUpdate(
         courseId,
         {
           $pull: { courseVideos: { key: videoKey } },
+          totalDuration: Math.max(0, newTotalDuration), // Ensure it doesn't go below 0
         },
         { new: true },
       )
@@ -258,6 +283,60 @@ export class CoursesService {
     return updatedCourse;
   }
 
+  async updateCourseVideoDuration(
+    courseId: string,
+    videoKey: string,
+    duration: number,
+  ): Promise<Course> {
+    const course = await this.courseModel.findById(courseId).exec();
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID '${courseId}' not found`);
+    }
+
+    // Find the video index
+    const videoIndex = course.courseVideos.findIndex((v) => v.key === videoKey);
+    if (videoIndex === -1) {
+      throw new NotFoundException(`Video with key '${videoKey}' not found`);
+    }
+
+    // Calculate the difference in duration
+    const oldDuration = course.courseVideos[videoIndex].duration || 0;
+    const durationDifference = duration - oldDuration;
+
+    // Update the specific video's duration
+    const updateQuery = {};
+    updateQuery[`courseVideos.${videoIndex}.duration`] = duration;
+
+    // Update the total duration
+    const newTotalDuration = course.totalDuration + durationDifference;
+
+    return this.courseModel
+      .findByIdAndUpdate(
+        courseId,
+        {
+          $set: updateQuery,
+          totalDuration: Math.max(0, newTotalDuration), // Ensure it doesn't go below 0
+        },
+        { new: true },
+      )
+      .exec();
+  }
+
+  async recalculateTotalDuration(courseId: string): Promise<Course> {
+    const course = await this.courseModel.findById(courseId).exec();
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID '${courseId}' not found`);
+    }
+
+    const totalDuration = this.calculateTotalDuration(course.courseVideos);
+
+    return this.courseModel
+      .findByIdAndUpdate(courseId, { totalDuration }, { new: true })
+      .exec();
+  }
+
   async remove(id: string): Promise<boolean> {
     if (!Types.ObjectId.isValid(id)) {
       throw new NotFoundException(`Invalid course ID: ${id}`);
@@ -278,5 +357,9 @@ export class CoursesService {
     }
 
     return this.courseModel.find({ teacher: teacherId }).exec();
+  }
+
+  async findByCategory(category: string): Promise<Course[]> {
+    return this.courseModel.find({ category }).exec();
   }
 }

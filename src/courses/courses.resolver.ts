@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { BadRequestException, UseGuards } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { Course } from './schemas/course.schema';
@@ -12,17 +19,28 @@ import { processUpload } from 'src/file-upload/file-upload.resolver';
 import { FileUploadService } from 'src/file-upload/file-upload.service';
 import { FileType } from 'src/common/enums/file-type.enum';
 import * as path from 'path';
+import { AuthService } from 'src/core/auth/auth.service';
 
 @Resolver(() => Course)
 export class CoursesResolver {
   constructor(
     private readonly coursesService: CoursesService,
     private readonly fileUploadService: FileUploadService,
+    private readonly usersService: AuthService,
   ) {}
 
   @Query(() => [Course])
   async courses(): Promise<Course[]> {
     return this.coursesService.findAll();
+  }
+
+  @ResolveField('teacher', () => User)
+  async getTeacher(@Parent() course: Course) {
+    const teacher = await this.usersService.findById(course.teacher.toString());
+    if (teacher && !teacher.name) {
+      teacher.name = 'Unnamed Teacher';
+    }
+    return teacher;
   }
 
   @Query(() => Course)
@@ -34,6 +52,13 @@ export class CoursesResolver {
   @UseGuards(AuthGuard)
   async myCourses(@CurrentUser() user: User): Promise<Course[]> {
     return this.coursesService.findByTeacher(user._id.toString());
+  }
+
+  @Query(() => [Course])
+  async coursesByCategory(
+    @Args('category') category: string,
+  ): Promise<Course[]> {
+    return this.coursesService.findByCategory(category);
   }
 
   @Mutation(() => Course)
@@ -104,6 +129,28 @@ export class CoursesResolver {
       description,
       duration,
     );
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async updateCourseVideoDuration(
+    @Args('courseId') courseId: string,
+    @Args('videoKey') videoKey: string,
+    @Args('duration', { type: () => Number }) duration: number,
+  ): Promise<Course> {
+    return this.coursesService.updateCourseVideoDuration(
+      courseId,
+      videoKey,
+      duration,
+    );
+  }
+
+  @Mutation(() => Course)
+  @UseGuards(AuthGuard)
+  async recalculateTotalDuration(
+    @Args('courseId') courseId: string,
+  ): Promise<Course> {
+    return this.coursesService.recalculateTotalDuration(courseId);
   }
 
   @Mutation(() => Course)

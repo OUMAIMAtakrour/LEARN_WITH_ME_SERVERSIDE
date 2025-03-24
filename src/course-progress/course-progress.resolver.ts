@@ -1,38 +1,58 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID, Context } from '@nestjs/graphql';
 import { CourseProgressService } from './course-progress.service';
 import { CourseProgress } from './schemas/course-progress.schema';
 import { CreateCourseProgressInput } from './dto/create-course-progress.input';
 import { UpdateCourseProgressInput } from './dto/update-course-progress.input';
-import { UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/role.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from 'src/core/auth/schemas/user.schema';
 
 @Resolver(() => CourseProgress)
 export class CourseProgressResolver {
   constructor(private readonly courseProgressService: CourseProgressService) {}
 
   @Mutation(() => CourseProgress)
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(AuthGuard)
   createCourseProgress(
     @Args('input') createCourseProgressInput: CreateCourseProgressInput,
+    @CurrentUser() user: any, // Use your CurrentUser decorator
   ): Promise<CourseProgress> {
-    return this.courseProgressService.create(createCourseProgressInput);
+    return this.courseProgressService.create({
+      userId: user.id,
+      courseId: createCourseProgressInput.courseId,
+    });
   }
 
   @Query(() => [CourseProgress], { name: 'courseProgresses' })
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.STUDENT)
   findAll(): Promise<CourseProgress[]> {
     return this.courseProgressService.findAll();
   }
 
+  // In your course-progress.resolver.ts
+  @Query(() => CourseProgress, { nullable: true })
+  @UseGuards(AuthGuard)
+  async getUserCourseProgress(
+    @Args('courseId') courseId: string,
+    @CurrentUser() user: User,
+  ): Promise<CourseProgress> {
+    if (!user || !user.id) {
+      throw new UnauthorizedException(
+        'You must be logged in to access course progress',
+      );
+    }
+
+    return this.courseProgressService.findByCourseAndUser(courseId, user.id);
+  }
   @Query(() => CourseProgress, { name: 'courseProgress' })
   @UseGuards(AuthGuard)
   findOne(@Args('id', { type: () => ID }) id: string): Promise<CourseProgress> {
-    return this.courseProgressService.findOne(+id);
+    return this.courseProgressService.findOne(id);
   }
 
   @Mutation(() => CourseProgress)

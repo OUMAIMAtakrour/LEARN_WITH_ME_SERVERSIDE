@@ -1,13 +1,14 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/core/auth/schemas/user.schema';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from 'src/core/auth/schemas/refresh-token.schema';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,6 +29,20 @@ export class AuthService {
     private jwtService: JwtService,
     private fileUploadService: FileUploadService,
   ) {}
+
+  async findById(id: string): Promise<User> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new NotFoundException(`Invalid user ID: ${id}`);
+    }
+
+    const user = await this.UserModel.findById(id).exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID '${id}' not found`);
+    }
+
+    return user;
+  }
 
   async signup(registerData: SignupInput, profileImage?: FileUpload) {
     const { email, password, name, role } = registerData;

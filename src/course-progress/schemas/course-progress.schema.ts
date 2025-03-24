@@ -50,5 +50,8 @@ export class CourseProgress extends Document {
   updatedAt: Date;
 }
 
+
 export const CourseProgressSchema =
   SchemaFactory.createForClass(CourseProgress);
+
+  CourseProgressSchema.index({ userId: 1, courseId: 1 }, { unique: true });

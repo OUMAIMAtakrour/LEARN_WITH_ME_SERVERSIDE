@@ -15,17 +15,24 @@ type Badge {
   pointsRequired: Float!
 }
 
+type Certificate {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Course {
   _id: ID!
+  category: String!
   certified: Boolean!
   courseDocuments: [CourseDocumentType!]!
   courseImageKey: String
   courseImageUrl: String
-  courseVideos: [Course!]!
+  courseVideos: [CourseVideo!]!
   createdAt: DateTime!
   description: String!
   teacher: User!
   title: String!
+  totalDuration: Float
   updatedAt: DateTime!
 }
 
@@ -48,6 +55,15 @@ type CourseProgress {
   videosProgress: [VideoProgress!]!
 }
 
+type CourseVideo {
+  description: String
+  duration: Float
+  key: String!
+  order: Float!
+  title: String!
+  url: String!
+}
+
 input CreateBadgeInput {
   description: String!
   imageUrl: String!
@@ -55,15 +71,24 @@ input CreateBadgeInput {
   pointsRequired: Int!
 }
 
+input CreateCertificateInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 input CreateCourseInput {
+  category: String!
   certified: Boolean!
   description: String!
   title: String!
 }
 
 input CreateCourseProgressInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Course ID"""
+  courseId: String!
+
+  """User ID"""
+  userId: String!
 }
 
 """
@@ -81,20 +106,25 @@ type Mutation {
   addCourseVideo(courseId: String!, description: String, duration: Float, title: String!, video: Upload!): Course!
   checkAndAwardBadges(points: Float!, userId: ID!): [UserBadge!]!
   createBadge(input: CreateBadgeInput!): Badge!
+  createCertificate(createCertificateInput: CreateCertificateInput!): Certificate!
   createCourse(image: Upload, input: CreateCourseInput!): Course!
   createCourseProgress(input: CreateCourseProgressInput!): CourseProgress!
   deleteCourse(id: String!): Boolean!
   login(input: LoginInput!): AuthResponse!
   markCourseAsCompleted(courseId: String!, userId: String!): CourseProgress!
+  recalculateTotalDuration(courseId: String!): Course!
   removeBadge(id: ID!): Boolean!
+  removeCertificate(id: Int!): Certificate!
   removeCourseDocument(courseId: String!, documentKey: String!): Course!
   removeCourseProgress(id: ID!): CourseProgress!
   removeCourseVideo(courseId: String!, videoKey: String!): Course!
   signup(input: SignupInput!, profileImage: Upload): User!
   updateBadge(id: ID!, input: UpdateBadgeInput!): Badge!
+  updateCertificate(updateCertificateInput: UpdateCertificateInput!): Certificate!
   updateCourse(id: String!, input: UpdateCourseInput!): Course!
   updateCourseImage(courseId: String!, image: Upload!): Course!
   updateCourseProgress(id: ID!, input: UpdateCourseProgressInput!): CourseProgress!
+  updateCourseVideoDuration(courseId: String!, duration: Float!, videoKey: String!): Course!
   updateProfileImage(profileImage: Upload!): User!
   updateVideoProgress(courseId: String!, userId: String!, videoId: String!, watchedSeconds: Float!): CourseProgress!
 }
@@ -102,11 +132,15 @@ type Mutation {
 type Query {
   badge(id: ID!): Badge!
   badges: [Badge!]!
+  certificate(id: Int!): Certificate!
+  certificates: [Certificate!]!
   completedCourses(userId: String!): [String!]!
   course(id: String!): Course!
   courseProgress(id: ID!): CourseProgress!
   courseProgresses: [CourseProgress!]!
   courses: [Course!]!
+  coursesByCategory(category: String!): [Course!]!
+  getUserCourseProgress(courseId: String!): CourseProgress
   isCourseCompleted(courseId: String!, userId: String!): Boolean!
   myBadges: [UserBadge!]!
   myCourses: [Course!]!
@@ -128,17 +162,26 @@ input UpdateBadgeInput {
   pointsRequired: Int
 }
 
+input UpdateCertificateInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
 input UpdateCourseInput {
+  category: String
   certified: Boolean
   description: String
-  id: ID!
   title: String
 }
 
 input UpdateCourseProgressInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  """Course ID"""
+  courseId: String
   id: Int!
+
+  """User ID"""
+  userId: String
 }
 
 """The `Upload` scalar type represents a file upload."""
