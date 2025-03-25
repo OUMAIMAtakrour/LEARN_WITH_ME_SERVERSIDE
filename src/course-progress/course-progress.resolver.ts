@@ -19,7 +19,7 @@ export class CourseProgressResolver {
   @UseGuards(AuthGuard)
   createCourseProgress(
     @Args('input') createCourseProgressInput: CreateCourseProgressInput,
-    @CurrentUser() user: any, // Use your CurrentUser decorator
+    @CurrentUser() user: any,
   ): Promise<CourseProgress> {
     return this.courseProgressService.create({
       userId: user.id,
@@ -34,7 +34,6 @@ export class CourseProgressResolver {
     return this.courseProgressService.findAll();
   }
 
-  // In your course-progress.resolver.ts
   @Query(() => CourseProgress, { nullable: true })
   @UseGuards(AuthGuard)
   async getUserCourseProgress(

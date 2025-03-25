@@ -56,7 +56,7 @@ export class CoursesService {
     const newCourse = new this.courseModel({
       ...createCourseInput,
       teacher: creator._id,
-      totalDuration: 0, // Initialize total duration as 0
+      totalDuration: 0, 
       ...(imageUploadResult && {
         courseImageUrl: imageUploadResult.url,
         courseImageKey: imageUploadResult.key,
@@ -143,7 +143,6 @@ export class CoursesService {
       order: highestOrder + 1,
     };
 
-    // Calculate the new total duration
     const newTotalDuration = this.calculateTotalDuration([
       ...course.courseVideos,
       newVideo,
@@ -205,7 +204,6 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
-    // Find the video to be removed
     const videoToRemove = course.courseVideos.find((v) => v.key === videoKey);
     if (!videoToRemove) {
       throw new NotFoundException(`Video with key '${videoKey}' not found`);
@@ -217,7 +215,6 @@ export class CoursesService {
       console.error('Failed to delete course video:', error);
     }
 
-    // Calculate new total duration by subtracting the removed video's duration
     const newTotalDuration =
       course.totalDuration - (videoToRemove.duration || 0);
 
@@ -226,7 +223,7 @@ export class CoursesService {
         courseId,
         {
           $pull: { courseVideos: { key: videoKey } },
-          totalDuration: Math.max(0, newTotalDuration), // Ensure it doesn't go below 0
+          totalDuration: Math.max(0, newTotalDuration),  below 0
         },
         { new: true },
       )
@@ -294,21 +291,17 @@ export class CoursesService {
       throw new NotFoundException(`Course with ID '${courseId}' not found`);
     }
 
-    // Find the video index
     const videoIndex = course.courseVideos.findIndex((v) => v.key === videoKey);
     if (videoIndex === -1) {
       throw new NotFoundException(`Video with key '${videoKey}' not found`);
     }
 
-    // Calculate the difference in duration
     const oldDuration = course.courseVideos[videoIndex].duration || 0;
     const durationDifference = duration - oldDuration;
 
-    // Update the specific video's duration
     const updateQuery = {};
     updateQuery[`courseVideos.${videoIndex}.duration`] = duration;
 
-    // Update the total duration
     const newTotalDuration = course.totalDuration + durationDifference;
 
     return this.courseModel
@@ -316,7 +309,7 @@ export class CoursesService {
         courseId,
         {
           $set: updateQuery,
-          totalDuration: Math.max(0, newTotalDuration), // Ensure it doesn't go below 0
+          totalDuration: Math.max(0, newTotalDuration), 
         },
         { new: true },
       )

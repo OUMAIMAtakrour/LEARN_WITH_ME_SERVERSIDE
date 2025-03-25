@@ -23,7 +23,6 @@ export class CourseProgressService {
     userId: string;
     courseId: string;
   }): Promise<CourseProgress> {
-    // First check if the user is already enrolled in this course
     const existingProgress = await this.progressModel
       .findOne({
         userId,
@@ -32,11 +31,9 @@ export class CourseProgressService {
       .exec();
 
     if (existingProgress) {
-      // Return the existing progress instead of creating a duplicate
       return existingProgress;
     }
 
-    // If not enrolled, create a new progress record
     const newProgress = new this.progressModel({
       userId,
       courseId,
@@ -51,14 +48,12 @@ export class CourseProgressService {
   }
 
   async findOne(id: string): Promise<CourseProgress> {
-    // Changed parameter type to string
     const progress = await this.progressModel.findById(id).exec();
     if (!progress) {
       throw new NotFoundException(`Course progress with ID ${id} not found`);
     }
     return progress;
   }
-  // In your course-progress.service.ts
   async findByCourseAndUser(
     courseId: string,
     userId: string,
