@@ -56,7 +56,7 @@ export class CoursesService {
     const newCourse = new this.courseModel({
       ...createCourseInput,
       teacher: creator._id,
-      totalDuration: 0, 
+      totalDuration: 0,
       ...(imageUploadResult && {
         courseImageUrl: imageUploadResult.url,
         courseImageKey: imageUploadResult.key,
@@ -223,7 +223,7 @@ export class CoursesService {
         courseId,
         {
           $pull: { courseVideos: { key: videoKey } },
-          totalDuration: Math.max(0, newTotalDuration),  below 0
+          totalDuration: Math.max(0, newTotalDuration),
         },
         { new: true },
       )
@@ -309,7 +309,7 @@ export class CoursesService {
         courseId,
         {
           $set: updateQuery,
-          totalDuration: Math.max(0, newTotalDuration), 
+          totalDuration: Math.max(0, newTotalDuration),
         },
         { new: true },
       )
